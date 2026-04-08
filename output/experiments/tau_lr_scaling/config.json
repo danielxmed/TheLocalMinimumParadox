@@ -1,0 +1,88 @@
+{
+  "experiment_name": "tau_lr_scaling",
+  "experiment_number": "E23",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 9,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "hidden": 64,
+  "input_dim": 20,
+  "output_dim": 5,
+  "n_train": 200,
+  "n_steps": 3000,
+  "learning_rates": [
+    0.003,
+    0.005,
+    0.01,
+    0.02,
+    0.03
+  ],
+  "checkpoints": [
+    0,
+    10,
+    25,
+    50,
+    75,
+    100,
+    150,
+    200,
+    300,
+    400,
+    500,
+    700,
+    1000,
+    1500,
+    2000,
+    2500,
+    3000
+  ],
+  "hessian_checkpoints": [
+    0,
+    200,
+    500,
+    1000
+  ],
+  "tau_analysis": {
+    "lr_values": [
+      0.003,
+      0.005,
+      0.01,
+      0.02,
+      0.03
+    ],
+    "tau_means": [
+      485.00515579737515,
+      264.13658565049025,
+      175.55240662516806,
+      97.6592603178379,
+      72.71301888088833
+    ],
+    "tau_stds": [
+      10.91203008675444,
+      6.6266785337076275,
+      20.658277403197648,
+      2.709747703071441,
+      1.9763844708421692
+    ],
+    "linear_C": 1.3290024536781055,
+    "linear_intercept": 28.522933760490123,
+    "linear_r2": 0.9882692070052567,
+    "power_law_gamma": -0.7973081585875386,
+    "power_law_r2": 0.9905692204729495
+  },
+  "total_time_seconds": 177.40788888931274
+}

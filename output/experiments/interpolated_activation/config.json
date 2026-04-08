@@ -1,0 +1,56 @@
+{
+  "experiment_name": "interpolated_activation",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 5,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "epsilons": [
+    0.0,
+    0.1,
+    0.2,
+    0.5,
+    0.8,
+    1.0
+  ],
+  "lrs": [
+    0.0001,
+    0.0003,
+    0.001,
+    0.003,
+    0.01,
+    0.03,
+    0.1,
+    0.3
+  ],
+  "hidden": 64,
+  "n_steps": 2000,
+  "input_dim": 20,
+  "output_dim": 5,
+  "n_train": 200,
+  "alpha_summary": {
+    "0.0": 1.107772978408015,
+    "0.1": 1.0897515155007294,
+    "0.2": 1.0779544684677553,
+    "0.5": 1.243543084391369,
+    "0.8": 1.2493973868360408,
+    "1.0": 1.292793275466231
+  },
+  "alpha_range": 0.21483880699847568,
+  "alpha_mean": 1.1768687848450234,
+  "alpha_std": 0.08688310050687148,
+  "total_time_seconds": 195.0166473388672
+}

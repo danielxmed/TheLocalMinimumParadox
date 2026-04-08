@@ -1,0 +1,42 @@
+{
+  "experiment_name": "fine_width_sweep",
+  "theory": "B_percolation_phase_transition",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "architecture": "mlp_deep",
+  "depth": 4,
+  "widths": [
+    32,
+    48,
+    64,
+    80,
+    96,
+    112,
+    128,
+    160,
+    192,
+    256
+  ],
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "n_train": 1000,
+  "n_test": 200,
+  "lr": 0.01,
+  "n_steps": 3000,
+  "n_interp_points": 21,
+  "data": "mnist",
+  "total_time_seconds": 739.5976998806
+}

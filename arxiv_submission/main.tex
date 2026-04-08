@@ -1,0 +1,399 @@
+\documentclass[11pt]{article}
+
+% === Geometry ===
+\usepackage[margin=1in]{geometry}
+
+% === Math ===
+\usepackage{amsmath,amssymb,amsthm}
+
+% === Figures ===
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+% === Tables ===
+\usepackage{booktabs}
+
+% === Citations ===
+\usepackage[numbers,sort&compress]{natbib}
+
+% === Hyperlinks ===
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
+
+% === Colors ===
+\usepackage{xcolor}
+
+% ============================================================
+% NOTATION MACROS (enforce consistency)
+% ============================================================
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\expect}{\mathbb{E}}
+\newcommand{\lr}{\eta}                    % learning rate
+\newcommand{\drexp}{\alpha}               % drift exponent
+\newcommand{\conslaw}{C_l}                % conservation quantity
+\newcommand{\imbal}{S}                    % gradient imbalance sum
+\newcommand{\hwidth}{m}                   % hidden width
+\newcommand{\inputdim}{d}                 % input dimension
+\newcommand{\nsamples}{n}                 % number of samples
+\newcommand{\nsteps}{T}                   % training steps
+\newcommand{\nclasses}{K}                 % number of classes
+\newcommand{\spectau}{\tau}               % compression timescale
+\newcommand{\frobnorm}[1]{\|#1\|_F}      % Frobenius norm
+\newcommand{\tr}{\operatorname{tr}}       % trace
+
+% === Theorem environments ===
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem*{theorem*}{Theorem}
+
+% ============================================================
+\title{\textbf{Conservation Law Breaking at the Edge of Stability:\\A Spectral Theory of Non-Convex Neural Network Optimization}}
+
+\author{
+  Daniel Nobrega Medeiros \\
+  University of Colorado Boulder \\[4pt]
+  \small \href{https://github.com/danielxmed}{github.com/danielxmed} $\cdot$
+  \href{https://huggingface.co/tylerxdurden}{huggingface.co/tylerxdurden} $\cdot$
+  \href{https://linkedin.com/in/daniel-nobrega-dnm}{linkedin.com/in/daniel-nobrega-dnm}
+}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+% ============================================================
+% ABSTRACT
+% ============================================================
+\begin{abstract}
+Why does gradient descent reliably find good solutions in non-convex neural network optimization, despite the landscape being NP-hard in the worst case?
+We show that gradient flow on $L$-layer ReLU networks without bias preserves $L{-}1$ conservation laws $\conslaw = \frobnorm{W_{l+1}}^2 - \frobnorm{W_l}^2$, confining trajectories to lower-dimensional manifolds.
+Under discrete gradient descent, these laws break with total drift scaling as $\lr^\drexp$ where $\drexp \approx 1.1$--$1.6$ depends on architecture, loss function, and width.
+We decompose this drift exactly as $\lr^2 \cdot \imbal(\lr)$, where the gradient imbalance sum $\imbal(\lr)$ admits a closed-form spectral crossover formula $\imbal(\lr) = \sum_k c_k (1 - \rho_k^{2\nsteps}) / [\lr \lambda_k (2 - \lr\lambda_k)]$ with $\rho_k = 1 - \lr\lambda_k$.
+We derive the mode coefficients $c_k \propto e_k(0)^2 \lambda_{x,k}^2$ from first principles and validate them for both linear ($R = 0.85$) and ReLU ($R > 0.80$) networks.
+For cross-entropy loss, softmax probability concentration drives exponential Hessian spectral compression with timescale $\spectau = \Theta(1/\lr)$ independent of training set size---explaining why cross-entropy self-regularizes the drift exponent near $\drexp \approx 1.0$.
+Finally, we identify two dynamical regimes separated by a width-dependent transition: a perturbative sub-Edge-of-Stability regime where the spectral formula applies, and a non-perturbative regime with extensive mode coupling.
+All predictions are validated across 23~experiments.
+\end{abstract}
+
+% ============================================================
+% SECTION 1: INTRODUCTION
+% ============================================================
+\section{Introduction}
+\label{sec:intro}
+
+The loss landscape of deep neural networks presents a fundamental paradox. The optimization problem is provably NP-hard in the worst case~\citep{choromanska2015loss}, with exponentially many critical points, and yet simple gradient descent finds good solutions with remarkable reliability across architectures, datasets, and tasks. A growing body of work has identified contributing factors---overparameterization eliminates spurious local minima~\citep{du2019gradient,allenzhu2019convergence}, the Neural Tangent Kernel (NTK) provides convergence guarantees in the lazy regime~\citep{jacot2018neural}, and mean-field theory establishes global convergence for infinite-width networks~\citep{mei2018mean,chizat2018global}. Yet none of these frameworks explains the \emph{mechanism} by which practical, finite-width networks navigate the non-convex landscape.
+
+We propose that the answer lies in \emph{conservation laws and their structured breaking}. For $L$-layer homogeneous networks (ReLU activation, no bias), the layer-wise rescaling symmetry $W_l \to \alpha W_l$, $W_{l+1} \to \alpha^{-1} W_{l+1}$ generates $L{-}1$ conserved quantities under gradient flow. These conservation laws confine the optimization trajectory to a codimension-$(L{-}1)$ manifold $M_C$ where the landscape is more structured than the ambient space~\citep{kunin2021neural, zhao2023symmetries, marcotte2023conservation}.
+
+The key insight is that \emph{discrete} gradient descent breaks these conservation laws, and the \emph{pattern} of breaking determines the quality of the solution found. At the Edge of Stability (EoS)~\citep{cohen2021gradient}---where the maximum Hessian eigenvalue hovers near $2/\lr$---conservation law breaking is maximized, and paradoxically, training performance improves. This phenomenon was recently confirmed for linear networks by~\citet{ghosh2025learning}, who showed that balancedness breaks at EoS via period-doubling dynamics. Our work extends this to nonlinear ReLU networks, provides a complete spectral theory for the drift exponent, and connects conservation law breaking to cross-entropy self-regularization and width scaling.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+    \item We prove that the conservation drift decomposes exactly as $\lr^2 \cdot \imbal(\lr)$ (Theorem~\ref{thm:drift}), where $\imbal(\lr)$ depends on the Hessian spectral structure.
+    \item We derive a closed-form spectral crossover formula for $\imbal(\lr)$ (Theorem~\ref{thm:spectral}) that explains the non-integer drift exponent $\drexp \approx 1.1$ from first principles.
+    \item We derive the mode coefficients $c_k \propto e_k(0)^2 \lambda_{x,k}^2$ (Theorem~\ref{thm:ck}) and validate them for both linear and ReLU networks.
+    \item We prove that cross-entropy loss induces exponential Hessian spectral compression (Theorem~\ref{thm:compression}), with a compression timescale $\spectau = \Theta(1/\lr)$ that is independent of dataset size.
+    \item We identify two dynamical regimes---perturbative and non-perturbative---separated by a width-dependent transition governed by the overparameterization ratio.
+\end{enumerate}
+
+% === FIGURE 1 ===
+\begin{figure}[t]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig5_conservation_laws.png}
+    \caption{Conservation law verification: $\conslaw$ remains constant under gradient flow (relative drift $< 0.003\%$).}
+    \label{fig:conservation}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig5e_drift_scaling.png}
+    \caption{Drift scales as $\lr^\drexp$ with $\drexp \approx 1.16$ across four decades of learning rate ($R^2 > 0.99$).}
+    \label{fig:drift}
+\end{subfigure}
+\caption{\textbf{Conservation laws and their breaking.} (a)~Under gradient flow (small $\lr$), the conservation quantities $\conslaw = \frobnorm{W_{l+1}}^2 - \frobnorm{W_l}^2$ are preserved to high precision. (b)~Under discrete gradient descent, the total drift follows a power law $\lr^\drexp$ with a non-integer exponent explained by our spectral theory.}
+\label{fig:overview}
+\end{figure}
+
+% ============================================================
+% SECTION 2: CONSERVATION LAWS AND THEIR BREAKING
+% ============================================================
+\section{Conservation Laws and Their Breaking}
+\label{sec:conservation}
+
+\paragraph{Setup.}
+Consider an $L$-layer fully connected network $f(x; \theta) = W_L \sigma(W_{L-1} \sigma(\cdots \sigma(W_1 x)))$ with ReLU activation $\sigma(z) = \max(0,z)$, no bias terms, layer widths $\hwidth_0 = \inputdim$, $\hwidth_L = \nclasses$, $\hwidth_1 = \cdots = \hwidth_{L-1} = \hwidth$, and loss $\mathcal{L}(\theta) = \frac{1}{\nsamples} \sum_{i=1}^{\nsamples} \ell(f(x_i; \theta), y_i)$.
+
+\begin{theorem}[Conservation Laws]\label{thm:conservation}
+Under gradient flow $d\theta/dt = -\nabla \mathcal{L}(\theta)$, the $L{-}1$ quantities
+\begin{equation}\label{eq:conservation}
+    \conslaw(t) = \frobnorm{W_{l+1}(t)}^2 - \frobnorm{W_l(t)}^2 = \conslaw(0), \quad l = 1, \ldots, L-1,
+\end{equation}
+are exactly conserved for all $t \geq 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+ReLU is positively 1-homogeneous, so the rescaling $W_l \to \alpha W_l$, $W_{l+1} \to \alpha^{-1} W_{l+1}$ preserves $f(x; \theta)$. Differentiating this invariance at $\alpha = 1$ yields $\tr(W_l^\top \partial\mathcal{L}/\partial W_l) = \tr(W_{l+1}^\top \partial\mathcal{L}/\partial W_{l+1})$ for all $l$. Since $\frac{d}{dt}\frobnorm{W_l}^2 = -2\tr(W_l^\top \partial\mathcal{L}/\partial W_l)$, this rate is identical across layers, so $\frac{d}{dt}\conslaw = 0$. Full proof in Appendix~\ref{app:proof:conservation}.
+\end{proof}
+
+The conservation laws confine gradient flow to the manifold $M_C = \{\theta : \conslaw(\theta) = \conslaw(\theta_0),\; l = 1,\ldots,L-1\}$ of dimension $N - (L{-}1)$, reducing the effective dimensionality of the optimization problem.
+
+Under \emph{discrete} gradient descent $W_l(t+1) = W_l(t) - \lr \frac{\partial\mathcal{L}}{\partial W_l}(t)$, conservation is broken. The following theorem provides the exact drift decomposition.
+
+\begin{theorem}[Drift Decomposition]\label{thm:drift}
+Under gradient descent with learning rate $\lr$, the per-step change in $\conslaw$ is exactly
+\begin{equation}\label{eq:drift}
+    \Delta \conslaw(t) = \lr^2 \left[\left\|\frac{\partial\mathcal{L}}{\partial W_{l+1}}(t)\right\|_F^2 - \left\|\frac{\partial\mathcal{L}}{\partial W_l}(t)\right\|_F^2\right].
+\end{equation}
+The total drift over $\nsteps$ steps is $|\conslaw(\nsteps) - \conslaw(0)| = \lr^2 |\imbal(\lr)|$, where
+\begin{equation}\label{eq:imbalance}
+    \imbal(\lr) = \sum_{t=0}^{\nsteps-1} \left[\left\|\frac{\partial\mathcal{L}}{\partial W_{l+1}}(t)\right\|_F^2 - \left\|\frac{\partial\mathcal{L}}{\partial W_l}(t)\right\|_F^2\right]
+\end{equation}
+is the \emph{gradient imbalance sum}.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Expand $\frobnorm{W_l(t+1)}^2 = \frobnorm{W_l(t)}^2 - 2\lr\tr(W_l^\top \partial\mathcal{L}/\partial W_l) + \lr^2 \|\partial\mathcal{L}/\partial W_l\|_F^2$. The $O(\lr)$ cross-term cancels between layers $l$ and $l+1$ (by the same symmetry as Theorem~\ref{thm:conservation}), leaving only the $O(\lr^2)$ gradient norm difference. Full proof in Appendix~\ref{app:proof:drift}.
+\end{proof}
+
+The drift exponent $\drexp$ is determined by the $\lr$-dependence of $\imbal(\lr)$: since $\text{drift} \sim \lr^\drexp$ and $\text{drift} = \lr^2 |\imbal(\lr)|$, we have $\imbal(\lr) \sim \lr^{\drexp - 2}$.
+Experimentally, $\imbal(\lr) \sim \lr^{-0.84}$, giving $\drexp \approx 1.16$ (Figure~\ref{fig:drift}).
+
+% ============================================================
+% SECTION 3: SPECTRAL CROSSOVER FORMULA
+% ============================================================
+\section{Spectral Crossover Formula}
+\label{sec:spectral}
+
+The sub-quadratic drift exponent ($\drexp > 1$ but $\drexp < 2$) indicates that $\imbal(\lr)$ decreases with $\lr$, but slower than $1/\lr$. We now show this arises from a spectral crossover in the Hessian eigenvalue structure.
+
+\begin{theorem}[Linear Networks Share the Same $\drexp$]\label{thm:linear}
+For a 2-layer linear network $f(x) = W_2 W_1 x$ without bias, trained with gradient descent on MSE loss, the drift exponent is $\drexp = 1.10 \pm 0.01$ ($R^2 = 0.99$), essentially identical to the ReLU case ($\drexp = 1.08$).
+\end{theorem}
+
+This result implies that the non-integer drift exponent is a \emph{spectral} phenomenon arising from the deep parameterization, not from nonlinearity. For linear networks, the gradient descent dynamics decompose mode-by-mode in the SVD basis of the data, enabling an exact analysis.
+
+\begin{theorem}[Spectral Crossover Formula]\label{thm:spectral}
+For a 2-layer network (linear or ReLU) trained with gradient descent for $\nsteps$ steps on data with effective Hessian eigenvalues $\{\lambda_k\}$, the gradient imbalance sum is
+\begin{equation}\label{eq:spectral}
+    \imbal(\lr) = \sum_k c_k \cdot \frac{1 - (1 - \lr\lambda_k)^{2\nsteps}}{\lr\lambda_k(2 - \lr\lambda_k)},
+\end{equation}
+where $c_k > 0$ are mode-dependent coefficients independent of $\lr$, and $\rho_k = 1 - \lr\lambda_k$.
+\end{theorem}
+
+Each mode $k$ transitions between two regimes at the crossover learning rate $\lr_k^* = 1/(\lambda_k \nsteps)$:
+\begin{itemize}
+    \item \textbf{Unconverged} ($\lr \ll \lr_k^*$): the numerator $\approx 2\lr\lambda_k\nsteps$, so the contribution scales as $\nsteps$---independent of $\lr$, yielding a local $\drexp = 2$.
+    \item \textbf{Converged} ($\lr \gg \lr_k^*$): the numerator $\approx 1$, so the contribution $\approx 1/[\lr\lambda_k(2-\lr\lambda_k)]$---scaling as $1/\lr$, yielding a local $\drexp = 1$.
+\end{itemize}
+
+The effective drift exponent over any $\lr$-range interpolates between 1 and 2, determined by the fraction of converged modes. For typical spectra with most modes converged across the measured $\lr$-range, $\drexp \approx 1.1$. The formula predicts $\imbal(\lr)$ with 14--27\% relative error for ReLU networks across three decades of learning rate.
+
+\paragraph{First-principles derivation of $c_k$.}
+
+\begin{theorem}[Mode Coefficients for Linear Networks]\label{thm:ck}
+For a 2-layer linear network with balanced Kaiming initialization, the mode coefficients in~\eqref{eq:spectral} are
+\begin{equation}\label{eq:ck}
+    c_k \propto e_k(0)^2 \cdot \lambda_{x,k}^2,
+\end{equation}
+where $e_k(0) = \sigma_{k,0}^2 - \sigma_k^*$ is the initial prediction error in mode $k$ and $\lambda_{x,k}$ is the $k$-th eigenvalue of the data covariance matrix $\Sigma_x$.
+\end{theorem}
+
+This is a \emph{closed-form, parameter-free prediction}: the spectral mode weights are determined entirely by the data covariance spectrum and the initial error structure. Experimental validation yields $R = 0.847$ for linear networks (E20) and $R > 0.80$ for ReLU networks across all tested learning rates (E21), including at the Edge of Stability. The ReLU correction is $O(10^{-4})$ at width 64, where the activation switch rate is below $0.1\%$.
+
+% === FIGURE 2 ===
+\begin{figure}[t]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig12_spectral_prediction.png}
+    \caption{Spectral formula predicts $\imbal(\lr)$ across architectures.}
+    \label{fig:spectral_pred}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig23_ck_derivation.png}
+    \caption{Linear $c_k$ validation: predicted vs.\ measured ($R = 0.85$).}
+    \label{fig:ck_linear}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig24_relu_ck_validation.png}
+    \caption{ReLU $c_k$: $R > 0.80$ at all learning rates including EoS.}
+    \label{fig:ck_relu}
+\end{subfigure}
+\caption{\textbf{Spectral crossover formula and $c_k$ validation.} (a)~The formula~\eqref{eq:spectral} predicts the gradient imbalance sum for both linear (14--18\% error) and ReLU (14--27\% error) networks. (b,c)~The first-principles mode coefficients $c_k \propto e_k^2 \lambda_{x,k}^2$ match empirical values with $R \geq 0.80$ for both architectures.}
+\label{fig:spectral}
+\end{figure}
+
+% ============================================================
+% SECTION 4: TIME-DEPENDENT UNIVERSALITY
+% ============================================================
+\section{Time-Dependent Universality and Cross-Entropy Self-Regularization}
+\label{sec:timedep}
+
+A striking empirical finding is that cross-entropy (CE) loss produces drift exponents $\drexp \approx 1.0$--$1.1$ \emph{regardless of width}, while MSE loss allows $\drexp$ to grow beyond 1.6 at large widths. We now explain this dichotomy through the time-dependent structure of the CE Hessian.
+
+\paragraph{CE Hessian factorization.}
+The Gauss-Newton approximation to the CE Hessian is
+\begin{equation}\label{eq:ce_hessian}
+    H_{\text{CE}}(t) = \frac{1}{\nsamples} J(t)^\top S(p(t))\, J(t),
+\end{equation}
+where $J(t)$ is the $\nsamples\nclasses \times P$ Jacobian of logits, and $S(p(t)) = \text{block\_diag}(S_1, \ldots, S_\nsamples)$ with $S_i = \text{diag}(p_i) - p_i p_i^\top$. For MSE, $H_{\text{MSE}} = \frac{1}{\nsamples} J^\top J$---no softmax modulation.
+
+\begin{theorem}[Spectral Compression]\label{thm:compression}
+For a network trained with CE loss, the maximum Hessian eigenvalue satisfies
+\begin{equation}\label{eq:compression}
+    \lambda_{\max}(H_{\text{CE}}(t)) \leq \lambda_{\max}\!\left(\tfrac{1}{\nsamples}J(t)^\top J(t)\right) \cdot \max_i\, [q_i(t)(1 - q_i(t))],
+\end{equation}
+where $q_i(t) = p_{i,y_i}(t)$ is the correct-class probability for sample $i$. As training proceeds and $q_i \to 1$, the factor $q_i(1-q_i) \to 0$, yielding exponential compression of the Hessian spectrum.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the variational characterization of $\lambda_{\max}$:
+$\lambda_{\max}(H_{\text{CE}}) = \max_{\|v\|=1} \frac{1}{\nsamples}\sum_i (J_i v)^\top S_i (J_i v) \leq \max_i \lambda_{\max}(S_i) \cdot \lambda_{\max}(\frac{1}{\nsamples}J^\top J)$.
+Since $\lambda_{\max}(S_i) = \max_k p_{i,k}(1-p_{i,k}) \leq q_i(1-q_i)$ when the correct class dominates, the bound follows. Full proof in Appendix~\ref{app:proof:compression}.
+\end{proof}
+
+Experimentally, $\lambda_{\max}(H_{\text{CE}})$ drops 24$\times$ from $\sim$7.2 to $\sim$0.3 over 2000 training steps (E18). The compression rate is \emph{independent of the number of training samples} $\nsamples$---a surprising finding we now explain.
+
+\begin{proposition}[Compression Timescale]\label{prop:tau}
+For a 2-layer ReLU network with $\hwidth \geq C_0 \cdot \nsamples \log\nsamples / \lambda_0$ hidden units (the overparameterization threshold), the spectral compression timescale satisfies
+\begin{equation}\label{eq:tau}
+    \spectau = \Theta(1/\lr), \quad \text{independent of } \nsamples.
+\end{equation}
+\end{proposition}
+
+The proof connects to the NTK theory. In the overparameterized regime, each sample's convergence rate is dominated by same-class cross-kernel contributions: $\text{rate}_i \approx \lr \cdot C_{\text{cross}}/\nclasses$, where $C_{\text{cross}} = \expect_{x,x'}[\kappa(x,x')]$ depends only on architecture and data distribution, not $\nsamples$. This gives $\spectau = \nclasses/(\lr \cdot C_{\text{cross}}) = O(1/\lr)$. See Appendix~\ref{app:proof:tau} for the full derivation.
+
+Experimental validation (E23): the linear fit $\spectau = 1.33/\lr + 29$ achieves $R^2 = 0.988$ across five learning rates.
+
+\paragraph{Why CE self-regularizes $\drexp$.}
+As training proceeds, CE spectral compression shrinks the effective Hessian eigenvalues. In the spectral crossover formula~\eqref{eq:spectral}, smaller $\lambda_k$ means modes transition to the ``unconverged'' regime, pulling $\drexp$ toward 2. But simultaneously, the compressed spectrum means the \emph{total} $\imbal(\lr)$ is much smaller. The net effect: CE maintains $\drexp \approx 1.0$--$1.1$ regardless of width, because the spectral compression prevents the extensive mode coupling that drives $\drexp$ upward in the MSE case.
+
+% === FIGURE 3 ===
+\begin{figure}[t]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig21_theorem5b_validation.png}
+    \caption{CE Hessian $\lambda_{\max}$ drops 24$\times$; decay rate is $\nsamples$-independent.}
+    \label{fig:ce_decay}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig26_tau_lr_scaling.png}
+    \caption{$\spectau$ vs.\ $1/\lr$: linear fit $R^2 = 0.988$.}
+    \label{fig:tau}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig20_interaction_width.png}
+    \caption{CE clamps $\drexp \approx 1.0$ across widths; MSE diverges.}
+    \label{fig:ce_clamp}
+\end{subfigure}
+\caption{\textbf{Cross-entropy self-regularization.} (a)~The CE Hessian spectrum compresses exponentially during training, with an $\nsamples$-independent rate. (b)~The compression timescale scales as $\spectau = \Theta(1/\lr)$, validated by E23. (c)~CE holds $\drexp$ near 1.0 regardless of width, while MSE permits unbounded growth.}
+\label{fig:timedep}
+\end{figure}
+
+% ============================================================
+% SECTION 5: WIDTH SCALING AND EOS DICHOTOMY
+% ============================================================
+\section{Edge of Stability Dichotomy and Width Scaling}
+\label{sec:width}
+
+The spectral crossover formula (Theorem~\ref{thm:spectral}) assumes that modes evolve independently. This assumption breaks down at the Edge of Stability, where ReLU activation switching creates extensive mode coupling.
+
+\begin{theorem}[EoS/Sub-EoS Dichotomy]\label{thm:dichotomy}
+For a 2-layer ReLU network of width $\hwidth$, the dynamics exhibit two regimes:
+\begin{enumerate}
+    \item \textbf{Sub-EoS} ($\lambda_{\max} < 2/\lr$): Per-neuron activation switch rate $\sim \hwidth^{-0.5}$, total mode coupling $O(\sqrt{\hwidth})$, and the spectral crossover formula applies with perturbative corrections.
+    \item \textbf{At EoS} ($\lambda_{\max} \approx 2/\lr$): Per-neuron switch rate is width-\emph{independent}, total mode coupling is $O(\hwidth)$, and the simple power-law drift model $\sim \lr^\drexp$ develops significant curvature in log-log space.
+\end{enumerate}
+\end{theorem}
+
+\paragraph{Width scaling of $\drexp$.}
+For MSE loss, the drift exponent grows with width as $\drexp - 1 \sim c \cdot \hwidth^{1.18}$ (E19). The power-law quality degrades systematically from $R^2 = 0.999$ at width 16 to $R^2 = 0.887$ at width 192, consistent with the transition from perturbative to non-perturbative dynamics.
+
+\paragraph{Width-dimension transition.}
+The transition between regimes depends on the \emph{absolute overparameterization} rather than a fixed $\hwidth/\inputdim$ ratio (E22). For input dimensions $\inputdim \in \{10, 20, 40\}$, the transition width satisfies $\hwidth^*/\inputdim = 6.0, 3.0, 1.0$ respectively---the transition occurs earlier (at smaller $\hwidth/\inputdim$) for larger $\inputdim$ because even modest widths provide sufficient parameters relative to the training data constraints.
+
+% === FIGURE 4 ===
+\begin{figure}[t]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig22_mse_width_divergence.png}
+    \caption{MSE $\drexp$ diverges with width; power-law quality degrades.}
+    \label{fig:width_diverge}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig25_width_dim_transition.png}
+    \caption{$\drexp$ vs.\ $\hwidth/\inputdim$: curves do NOT collapse.}
+    \label{fig:width_dim}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig18_width_switch_rate.png}
+    \caption{Per-neuron switch rate: width-independent at EoS.}
+    \label{fig:switch_rate}
+\end{subfigure}
+\caption{\textbf{Width scaling and dynamical regimes.} (a)~$\drexp - 1 \sim \hwidth^{1.18}$ for MSE, with increasing curvature at large widths. (b)~The transition width $\hwidth^*$ depends on absolute overparameterization, not $\hwidth/\inputdim$. (c)~At EoS, the per-neuron activation switch rate is width-independent, confirming extensive $O(\hwidth)$ total mode coupling.}
+\label{fig:width}
+\end{figure}
+
+% ============================================================
+% SECTION 6: DISCUSSION
+% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+
+Our results provide a unified spectral theory for why gradient descent navigates non-convex neural network landscapes. The key insight is that conservation laws from the network's symmetry group serve as ``guide rails'' during early training, confining trajectories to structured submanifolds. At the Edge of Stability, discrete gradient descent breaks these laws in a structured way---the spectral crossover formula (Theorem~\ref{thm:spectral}) explains the precise power-law scaling of the drift from first principles.
+
+\paragraph{Cross-entropy as a self-regularizing loss.}
+The spectral compression mechanism (Theorem~\ref{thm:compression}) reveals that CE loss has a \emph{built-in} regularization property: softmax probability concentration exponentially shrinks the Hessian spectrum during training, preventing the extensive mode coupling that drives $\drexp$ upward in the MSE case. The compression timescale $\spectau = \Theta(1/\lr)$ is $\nsamples$-independent in the overparameterized regime, connecting to the NTK theory in a novel way.
+
+\paragraph{Practical implications.}
+Our theory suggests that learning rate schedules should respect the EoS boundary: operating at $\lr \approx 2/\lambda_{\max}$ maximizes structured conservation law breaking and improves training. For CE loss, the self-regularization implies robustness to learning rate choice, consistent with empirical observations.
+
+\paragraph{Open problems.}
+Several directions remain:
+(i)~computing $c_k$ at EoS with extensive mode coupling, where the independent-mode decomposition breaks down;
+(ii)~extending the theory beyond 2-layer networks, where the mean-field quasi-convexity result (Theorem~\ref{thm:conservation}) applies but the spectral analysis requires multi-layer generalizations;
+(iii)~connecting conservation law breaking directly to generalization bounds;
+(iv)~bridging to the percolation and tropical Morse perspectives on mode connectivity.
+
+% ============================================================
+% ACKNOWLEDGMENTS
+% ============================================================
+\paragraph{Acknowledgments.}
+Computational experiments were performed on a consumer-grade CPU (Intel i5-1038NG7, 16GB RAM) using PyTorch 2.2.2, demonstrating that rigorous ML theory research is accessible without GPU resources.
+
+% ============================================================
+% BIBLIOGRAPHY
+% ============================================================
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% ============================================================
+% APPENDIX
+% ============================================================
+\newpage
+\appendix
+\input{appendix}
+
+\end{document}

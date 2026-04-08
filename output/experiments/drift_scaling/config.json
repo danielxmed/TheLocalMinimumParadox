@@ -1,0 +1,37 @@
+{
+  "experiment_name": "drift_scaling",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256,
+    512,
+    1024
+  ],
+  "lrs": [
+    0.0001,
+    0.0003,
+    0.001,
+    0.003,
+    0.01,
+    0.03,
+    0.1,
+    0.3,
+    0.5,
+    1.0
+  ],
+  "hidden": 64,
+  "n_steps": 2000,
+  "power_law_exponent": 1.16277281561424
+}

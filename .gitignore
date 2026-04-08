@@ -1,0 +1,78 @@
+# Ralph generated files (inside .ralph/ subfolder)
+.ralph/.call_count
+.ralph/.last_reset
+.ralph/.exit_signals
+.ralph/status.json
+.ralph/.ralph_session
+.ralph/.ralph_session_history
+.ralph/.claude_session_id
+.ralph/.response_analysis
+.ralph/.circuit_breaker_state
+.ralph/.circuit_breaker_history
+
+# Ralph logs and generated docs
+.ralph/logs/*
+!.ralph/logs/.gitkeep
+.ralph/docs/generated/*
+!.ralph/docs/generated/.gitkeep
+
+# General logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+.temp/
+
+# Node modules (if using Node.js projects)
+node_modules/
+
+# Python cache (if using Python projects)
+__pycache__/
+*.pyc
+
+# Rust build (if using Rust projects)
+target/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ralph backup directories (created by migration)
+.ralph_backup_*
+
+# Session handoff (internal)
+NEXT_PROMPT.md
+LLM-WIKI-PROMPT.md
+
+# Claude Code / AI internals
+.claude/
+.claude-flow/
+.plans/
+.mcp.json
+
+# Environment / credentials
+.env
+.env.*
+
+# Large binary data (regenerable from scripts)
+*.npy
+
+# Training data (downloadable)
+data/
+
+# LaTeX build artifacts
+arxiv_submission/*.aux
+arxiv_submission/*.bbl
+arxiv_submission/*.blg
+arxiv_submission/*.log
+arxiv_submission/*.out
+arxiv_submission/*.fls
+arxiv_submission/*.fdb_latexmk
+arxiv_submission/*.synctex.gz
+arxiv_submission/*.toc

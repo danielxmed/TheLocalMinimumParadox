@@ -1,0 +1,31 @@
+{
+  "experiment_name": "pl_critical_cells",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "input_dim": 2,
+  "output_dim": 1,
+  "n_data": 20,
+  "widths": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    8,
+    10,
+    15,
+    20
+  ],
+  "n_samples": 5000,
+  "n_probes": 10000
+}

@@ -1,0 +1,57 @@
+{
+  "experiment_name": "width_mode_coupling",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 6,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "widths": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "act_epsilons": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "lrs": [
+    0.0001,
+    0.0003,
+    0.001,
+    0.003,
+    0.01,
+    0.03,
+    0.1,
+    0.3
+  ],
+  "n_steps": 2000,
+  "input_dim": 20,
+  "output_dim": 5,
+  "n_train": 200,
+  "delta_alphas": {
+    "16": -0.11197902695672735,
+    "32": -0.02616894099157574,
+    "64": 0.185020297058216,
+    "128": -0.1414529801839184,
+    "256": 0.5678820405811495
+  },
+  "gamma": null,
+  "gamma_r2": 0.0,
+  "total_time_seconds": 1155.752023935318
+}

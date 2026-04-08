@@ -1,0 +1,86 @@
+{
+  "experiment_name": "conservation_laws",
+  "theory": "conservation_laws",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256,
+    512,
+    1024
+  ],
+  "n_steps": 2000,
+  "configs": [
+    {
+      "name": "2layer_nobias_lr0.001",
+      "arch": "mlp_2layer_nobias",
+      "hidden": 64,
+      "input_dim": 20,
+      "output_dim": 5,
+      "lr": 0.001,
+      "bias": false,
+      "depth": null
+    },
+    {
+      "name": "2layer_bias_lr0.001",
+      "arch": "mlp_2layer",
+      "hidden": 64,
+      "input_dim": 20,
+      "output_dim": 5,
+      "lr": 0.001,
+      "bias": true,
+      "depth": null
+    },
+    {
+      "name": "deep4_nobias_lr0.001",
+      "arch": "mlp_deep_nobias",
+      "hidden": 32,
+      "input_dim": 20,
+      "output_dim": 5,
+      "lr": 0.001,
+      "bias": false,
+      "depth": 4
+    },
+    {
+      "name": "deep4_bias_lr0.001",
+      "arch": "mlp_deep",
+      "hidden": 32,
+      "input_dim": 20,
+      "output_dim": 5,
+      "lr": 0.001,
+      "bias": true,
+      "depth": 4
+    },
+    {
+      "name": "2layer_nobias_lr0.01",
+      "arch": "mlp_2layer_nobias",
+      "hidden": 64,
+      "input_dim": 20,
+      "output_dim": 5,
+      "lr": 0.01,
+      "bias": false,
+      "depth": null
+    },
+    {
+      "name": "2layer_nobias_lr0.1",
+      "arch": "mlp_2layer_nobias",
+      "hidden": 64,
+      "input_dim": 20,
+      "output_dim": 5,
+      "lr": 0.1,
+      "bias": false,
+      "depth": null
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "experiment_name": "hessian_spectrum",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "configs": [
+    {
+      "name": "tiny_2layer",
+      "arch": "tiny_mlp",
+      "hidden": 20,
+      "input_dim": 10,
+      "output_dim": 3,
+      "method": "full"
+    },
+    {
+      "name": "small_2layer",
+      "arch": "tiny_mlp",
+      "hidden": 50,
+      "input_dim": 10,
+      "output_dim": 3,
+      "method": "full"
+    },
+    {
+      "name": "medium_2layer",
+      "arch": "mlp_2layer",
+      "hidden": 64,
+      "input_dim": 10,
+      "output_dim": 3,
+      "method": "lanczos"
+    }
+  ],
+  "data_config": {
+    "name": "gaussian_mixture",
+    "n_train": 100,
+    "n_test": 30,
+    "d": 10,
+    "K": 3,
+    "separation": 1.5
+  },
+  "checkpoints": [
+    0,
+    100,
+    500,
+    1000,
+    2000
+  ]
+}

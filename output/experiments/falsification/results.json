@@ -1,0 +1,72 @@
+{
+  "ReLU_nobias_sgd": {
+    "activation": "relu",
+    "bias": false,
+    "optimizer": "sgd",
+    "mean_rel_drift": 3.401917997202739e-05,
+    "std_drift": 6.057342673150333e-07,
+    "conserved": "True",
+    "prediction_matched": "True",
+    "prediction": "CONSERVED (baseline)"
+  },
+  "ReLU_bias_sgd": {
+    "activation": "relu",
+    "bias": true,
+    "optimizer": "sgd",
+    "mean_rel_drift": 0.0009928150893836751,
+    "std_drift": 0.0005039455044794669,
+    "conserved": "True",
+    "prediction_matched": "False",
+    "prediction": "BROKEN (bias breaks symmetry)"
+  },
+  "Tanh_nobias_sgd": {
+    "activation": "tanh",
+    "bias": false,
+    "optimizer": "sgd",
+    "mean_rel_drift": 0.05853297293668783,
+    "std_drift": 0.00286206107543914,
+    "conserved": "False",
+    "prediction_matched": "True",
+    "prediction": "BROKEN (tanh not homogeneous)"
+  },
+  "GELU_nobias_sgd": {
+    "activation": "gelu",
+    "bias": false,
+    "optimizer": "sgd",
+    "mean_rel_drift": 0.0009436767362097608,
+    "std_drift": 0.0005508612068029145,
+    "conserved": "True",
+    "prediction_matched": "False",
+    "prediction": "BROKEN (GELU not homogeneous)"
+  },
+  "Sigmoid_nobias_sgd": {
+    "activation": "sigmoid",
+    "bias": false,
+    "optimizer": "sgd",
+    "mean_rel_drift": 0.03156975931958885,
+    "std_drift": 0.0015475404082530874,
+    "conserved": "False",
+    "prediction_matched": "True",
+    "prediction": "BROKEN (sigmoid not homogeneous)"
+  },
+  "LeakyReLU_nobias_sgd": {
+    "activation": "leaky_relu",
+    "bias": false,
+    "optimizer": "sgd",
+    "mean_rel_drift": 3.6858703796185066e-05,
+    "std_drift": 8.71203541959608e-07,
+    "conserved": "True",
+    "prediction_matched": "True",
+    "prediction": "CONSERVED? (leaky ReLU IS homogeneous)"
+  },
+  "ReLU_nobias_adam": {
+    "activation": "relu",
+    "bias": false,
+    "optimizer": "adam",
+    "mean_rel_drift": 0.39283405379318354,
+    "std_drift": 0.027602623173415258,
+    "conserved": "False",
+    "prediction_matched": "True",
+    "prediction": "BROKEN (Adam breaks gradient flow)"
+  }
+}

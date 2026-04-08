@@ -1,0 +1,87 @@
+{
+  "experiment_name": "interaction_width",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 7,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "widths": [
+    32,
+    64,
+    128
+  ],
+  "lrs": [
+    0.001,
+    0.003,
+    0.01,
+    0.03,
+    0.1
+  ],
+  "n_steps": 2000,
+  "input_dim": 20,
+  "output_dim": 5,
+  "n_train": 200,
+  "combinations": [
+    "linear_mse",
+    "linear_ce",
+    "relu_mse",
+    "relu_ce"
+  ],
+  "interaction_data": {
+    "32": {
+      "width": 32,
+      "alphas": {
+        "linear_mse": 1.065315770962237,
+        "linear_ce": 1.0422207230595046,
+        "relu_mse": 1.047242432317255,
+        "relu_ce": 1.019646894480113
+      },
+      "delta_activation": -0.018073338644982062,
+      "delta_loss": -0.023095047902732313,
+      "delta_interaction": -0.004500489934409657,
+      "total_change": -0.04566887648212403
+    },
+    "64": {
+      "width": 64,
+      "alphas": {
+        "linear_mse": 1.1772147351264854,
+        "linear_ce": 1.0755025161699188,
+        "relu_mse": 1.0990793863845865,
+        "relu_ce": 1.0282183073511044
+      },
+      "delta_activation": -0.07813534874189898,
+      "delta_loss": -0.10171221895656668,
+      "delta_interaction": 0.030851139923084636,
+      "total_change": -0.14899642777538102
+    },
+    "128": {
+      "width": 128,
+      "alphas": {
+        "linear_mse": 1.6297342757724231,
+        "linear_ce": 1.1358136518769129,
+        "relu_mse": 1.3519978250930813,
+        "relu_ce": 1.0446834534626255
+      },
+      "delta_activation": -0.27773645067934183,
+      "delta_loss": -0.4939206238955103,
+      "delta_interaction": 0.18660625226505445,
+      "total_change": -0.5850508223097977
+    }
+  },
+  "mean_interaction": 0.07098563408457648,
+  "std_interaction": 0.08302019812359812,
+  "total_time_seconds": 307.3297190666199
+}

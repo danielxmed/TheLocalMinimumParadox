@@ -1,0 +1,36 @@
+{
+  "experiment_name": "eos_deep",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "learning_rates": [
+    0.1,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "n_train": 2000,
+  "n_test": 200,
+  "depth": 4,
+  "hidden": 32,
+  "n_steps": 5000,
+  "log_every": 25,
+  "hessian_iters": 30,
+  "loss": "MSE",
+  "architecture": "mlp_deep_nobias",
+  "optimizer": "SGD (full-batch)"
+}

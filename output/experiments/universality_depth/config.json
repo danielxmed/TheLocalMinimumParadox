@@ -1,0 +1,63 @@
+{
+  "experiment_name": "universality_depth",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "sweep_name": "Depth Sweep",
+  "seeds": [
+    42,
+    137,
+    256,
+    512,
+    1024
+  ],
+  "lrs": [
+    0.0001,
+    0.0003,
+    0.001,
+    0.003,
+    0.01,
+    0.03,
+    0.1,
+    0.3,
+    0.5,
+    1.0
+  ],
+  "n_steps": 2000,
+  "summary": [
+    {
+      "label": "depth_2L",
+      "exponent": 1.16277281561424,
+      "r_squared": 0.9907370793822802
+    },
+    {
+      "label": "depth_3L",
+      "exponent": 1.0981701782525453,
+      "r_squared": 0.9957409369930026
+    },
+    {
+      "label": "depth_4L",
+      "exponent": 1.1345778674263118,
+      "r_squared": 0.9859853465108874
+    },
+    {
+      "label": "depth_6L",
+      "exponent": 1.4411330522134185,
+      "r_squared": 0.8313994369042429
+    },
+    {
+      "label": "depth_8L",
+      "exponent": 1.7182408930663013,
+      "r_squared": 0.7126655781730127
+    }
+  ]
+}

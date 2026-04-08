@@ -1,0 +1,42 @@
+{
+  "experiment_name": "gradient_imbalance",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 4,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256,
+    512,
+    1024
+  ],
+  "lrs": [
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0
+  ],
+  "hidden": 64,
+  "n_steps": 2000,
+  "arch": "mlp_2layer_nobias",
+  "dataset": "gaussian_mixture",
+  "analysis": {
+    "alpha_direct": 1.1901817101273513,
+    "r2_alpha": 0.9890368319571167,
+    "beta_decomposition": 0.8098182898726483,
+    "r2_beta": 0.9766170505945047,
+    "alpha_from_decomposition": 1.1901817101273517,
+    "mechanism_A_ratio_cv": 8.80062083771496
+  }
+}

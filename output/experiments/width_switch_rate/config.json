@@ -1,0 +1,104 @@
+{
+  "experiment_name": "width_switch_rate",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 7,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "widths": [
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "lrs": [
+    0.001,
+    0.01,
+    0.1
+  ],
+  "n_steps": 2000,
+  "input_dim": 20,
+  "output_dim": 5,
+  "n_train": 200,
+  "width_summary": {
+    "16": {
+      "width": 16,
+      "mean_per_neuron_rate": 0.0005667534722222224,
+      "std_per_neuron_rate": 0.000511968738119554,
+      "mean_total_switches": 1.8136111111111113,
+      "std_total_switches": 1.6382999619825727,
+      "mean_neurons_changed": 1.6022777777777777,
+      "mean_frac_neurons_changed": 0.1001423611111111
+    },
+    "32": {
+      "width": 32,
+      "mean_per_neuron_rate": 0.0005808680555555556,
+      "std_per_neuron_rate": 0.0006500679379105367,
+      "mean_total_switches": 3.7175555555555553,
+      "std_total_switches": 4.160434802627435,
+      "mean_neurons_changed": 3.322611111111111,
+      "mean_frac_neurons_changed": 0.10383159722222222
+    },
+    "64": {
+      "width": 64,
+      "mean_per_neuron_rate": 0.00046740017361111114,
+      "std_per_neuron_rate": 0.0004909171999792675,
+      "mean_total_switches": 5.982722222222222,
+      "std_total_switches": 6.2837401597346245,
+      "mean_neurons_changed": 5.3389444444444445,
+      "mean_frac_neurons_changed": 0.08342100694444445
+    },
+    "128": {
+      "width": 128,
+      "mean_per_neuron_rate": 0.00037773871527777773,
+      "std_per_neuron_rate": 0.00042014131124339343,
+      "mean_total_switches": 9.670111111111112,
+      "std_total_switches": 10.755617567830873,
+      "mean_neurons_changed": 8.831666666666667,
+      "mean_frac_neurons_changed": 0.06899739583333334
+    },
+    "256": {
+      "width": 256,
+      "mean_per_neuron_rate": 0.00048210503472222226,
+      "std_per_neuron_rate": 0.0005956000167645551,
+      "mean_total_switches": 24.68377777777778,
+      "std_total_switches": 30.494720858345225,
+      "mean_neurons_changed": 18.94327777777778,
+      "mean_frac_neurons_changed": 0.07399717881944445
+    }
+  },
+  "scaling_fits": {
+    "per_neuron_beta": 0.1087569492654227,
+    "per_neuron_r2": 0.4723803615375961,
+    "total_gamma": 0.8912430507345768,
+    "total_r2": 0.9836398621624488
+  },
+  "per_lr_betas": {
+    "0.001": 0.4212449595971406,
+    "0.01": 0.4766816853115644,
+    "0.1": 0.028938230902886088
+  },
+  "correlation_with_e14": 0.8479905490034249,
+  "delta_alphas_e14": {
+    "16": -0.112,
+    "32": -0.026,
+    "64": 0.185,
+    "128": -0.141,
+    "256": 0.568
+  },
+  "total_time_seconds": 67.77987313270569
+}

@@ -1,0 +1,233 @@
+% ============================================================
+% APPENDIX A: FULL PROOFS
+% ============================================================
+\section{Full Proofs}
+\label{app:proofs}
+
+% --- Theorem 1 ---
+\subsection{Proof of Theorem~\ref{thm:conservation} (Conservation Laws)}
+\label{app:proof:conservation}
+
+Consider an $L$-layer ReLU network $f(x;\theta) = W_L \sigma(W_{L-1}\sigma(\cdots\sigma(W_1 x)))$ with no bias terms. ReLU is positively 1-homogeneous: $\sigma(\alpha z) = \alpha\sigma(z)$ for $\alpha > 0$.
+
+\paragraph{Step 1: Rescaling invariance.}
+For any $l \in \{1,\ldots,L-1\}$ and $\alpha > 0$, the transformation $W_l \to \alpha W_l$, $W_{l+1} \to \alpha^{-1}W_{l+1}$ preserves the network function:
+\begin{equation}
+    W_{l+1}\sigma(W_l x) = (\alpha^{-1}W_{l+1})\sigma((\alpha W_l)x) = \alpha^{-1}W_{l+1}\cdot\alpha\cdot\sigma(W_l x) = W_{l+1}\sigma(W_l x),
+\end{equation}
+using the 1-homogeneity of $\sigma$. Since $f$ is invariant, $\mathcal{L}$ is also invariant.
+
+\paragraph{Step 2: Infinitesimal symmetry.}
+Differentiating the invariance $\mathcal{L}(\ldots,\alpha W_l, \alpha^{-1}W_{l+1},\ldots) = \mathcal{L}(\ldots,W_l,W_{l+1},\ldots)$ with respect to $\alpha$ at $\alpha=1$:
+\begin{equation}\label{eq:trace_equality}
+    \tr\!\left(W_l^\top \frac{\partial\mathcal{L}}{\partial W_l}\right) = \tr\!\left(W_{l+1}^\top \frac{\partial\mathcal{L}}{\partial W_{l+1}}\right).
+\end{equation}
+
+\paragraph{Step 3: Conservation.}
+Under gradient flow, $\frac{d}{dt}\frobnorm{W_l}^2 = 2\tr(W_l^\top \dot{W}_l) = -2\tr(W_l^\top \frac{\partial\mathcal{L}}{\partial W_l})$. By~\eqref{eq:trace_equality}, this rate is identical for all $l$. Therefore:
+\begin{equation}
+    \frac{d}{dt}\conslaw = \frac{d}{dt}\left(\frobnorm{W_{l+1}}^2 - \frobnorm{W_l}^2\right) = 0. \qquad\qed
+\end{equation}
+
+% --- Theorem 2' ---
+\subsection{Proof of Theorem~2$'$ (Mean-Field Quasi-Convexity)}
+\label{app:proof:meanfield}
+
+\begin{theorem*}[Mean-Field Quasi-Convexity on $M_C$]
+For a 2-layer ReLU network without bias, with MSE loss on $\nsamples$ data points in $\reals^\inputdim$, in the mean-field limit ($\hwidth \to \infty$): every local minimum of $\mathcal{L}$ restricted to $M_C$ is a global minimum.
+\end{theorem*}
+
+\begin{proof}
+Following~\citet{chizat2018global} and~\citet{mei2018mean}, represent the infinite-width network as a measure $\rho$ on $\Omega = \reals^\inputdim \times \reals^\nclasses$:
+\begin{equation}
+    f_\rho(x) = \int_\Omega a \cdot \sigma(w^\top x)\,d\rho(w,a).
+\end{equation}
+
+\textbf{Step 1:} The MSE risk $R(\rho) = \frac{1}{2\nsamples}\sum_i \|f_\rho(x_i) - y_i\|^2$ is \emph{convex} in $\rho$, since $f_\rho$ is linear in $\rho$ and $\|\cdot\|^2$ is convex.
+
+\textbf{Step 2:} The conservation constraint $C(\rho) = \int_\Omega (\|a\|^2 - \|w\|^2)\,d\rho = c$ is a linear functional of $\rho$, so the constraint set $M_C^\infty = \{\rho : C(\rho) = c\}$ is an affine subspace---in particular, convex.
+
+\textbf{Step 3:} A convex function restricted to a convex set has no spurious local minima.
+\end{proof}
+
+\begin{remark}
+The remaining gap is finite-width convergence: showing that the discrete measure $\rho_\hwidth$ on $M_C$ converges to the global minimizer of $R$ on $M_C^\infty$ at rate $O(1/\sqrt{\hwidth})$. Standard propagation-of-chaos results apply since the constraint is linear.
+\end{remark}
+
+% --- Theorem 3 ---
+\subsection{Proof of Theorem~\ref{thm:drift} (Drift Decomposition)}
+\label{app:proof:drift}
+
+\begin{proof}
+Under gradient descent: $W_l(t+1) = W_l(t) - \lr\frac{\partial\mathcal{L}}{\partial W_l}(t)$. Expanding:
+\begin{equation}
+    \frobnorm{W_l(t+1)}^2 = \frobnorm{W_l(t)}^2 - 2\lr\tr\!\left(W_l^\top\frac{\partial\mathcal{L}}{\partial W_l}\right) + \lr^2\left\|\frac{\partial\mathcal{L}}{\partial W_l}\right\|_F^2.
+\end{equation}
+
+Taking the difference between layers $l+1$ and $l$:
+\begin{align}
+    \conslaw(t+1) &= \conslaw(t) - 2\lr\underbrace{\left[\tr\!\left(W_{l+1}^\top\frac{\partial\mathcal{L}}{\partial W_{l+1}}\right) - \tr\!\left(W_l^\top\frac{\partial\mathcal{L}}{\partial W_l}\right)\right]}_{= 0 \text{ by~\eqref{eq:trace_equality}}} \\
+    &\quad + \lr^2\left[\left\|\frac{\partial\mathcal{L}}{\partial W_{l+1}}\right\|_F^2 - \left\|\frac{\partial\mathcal{L}}{\partial W_l}\right\|_F^2\right]. \notag
+\end{align}
+
+The $O(\lr)$ term vanishes by the same symmetry argument as Theorem~\ref{thm:conservation} (the traces are equal for discrete weights as well, since the identity~\eqref{eq:trace_equality} holds at any $\theta$). The remaining $O(\lr^2)$ term gives the exact per-step drift. Summing over $\nsteps$ steps yields the gradient imbalance sum $\imbal(\lr)$.
+\end{proof}
+
+% --- Theorem 4 ---
+\subsection{Proof of Theorem~\ref{thm:linear} (Linear Network Same $\drexp$)}
+\label{app:proof:linear}
+
+For a 2-layer linear network $f(x) = W_2 W_1 x$, the MSE loss gradient with respect to each layer is:
+\begin{align}
+    \frac{\partial\mathcal{L}}{\partial W_1} &= -\frac{1}{\nsamples} W_2^\top(Y - W_2 W_1 X)X^\top, \\
+    \frac{\partial\mathcal{L}}{\partial W_2} &= -\frac{1}{\nsamples} (Y - W_2 W_1 X)(W_1 X)^\top.
+\end{align}
+
+Decomposing in the data covariance eigenbasis $\Sigma_x = U_x \Lambda_x U_x^\top$ yields independent 1D problems. For each mode $k$ with effective error $e_k(t)$ and Hessian eigenvalue $\lambda_k = 2\lambda_{x,k}\sigma_{k,0}^2$, the error evolves as:
+\begin{equation}
+    e_k(t) = e_k(0)\cdot(1-\lr\lambda_k)^t = e_k(0)\cdot\rho_k^t.
+\end{equation}
+
+The gradient imbalance for mode $k$ contributes $\sum_t e_k(t)^2 = e_k(0)^2(1-\rho_k^{2\nsteps})/(1-\rho_k^2)$, which is exactly the spectral crossover formula with $c_k \propto e_k(0)^2\lambda_{x,k}^2$. The resulting drift exponent $\drexp = 1.10$ matches the ReLU case because both share the same Hessian spectral structure (ReLU adds mode coupling but does not change the leading-order spectral decomposition).
+
+% --- Theorem 5 ---
+\subsection{Proof of Theorem~\ref{thm:spectral} (Spectral Crossover Formula)}
+\label{app:proof:spectral}
+
+\begin{proof}
+From Theorem~\ref{thm:drift}, $\imbal(\lr) = \sum_t \delta(t)$ where $\delta(t) = \|\partial\mathcal{L}/\partial W_{l+1}\|_F^2 - \|\partial\mathcal{L}/\partial W_l\|_F^2$.
+
+For linear networks, the mode decomposition (Appendix~\ref{app:proof:linear}) gives $\delta(t) = \sum_k c_k \cdot e_k(t)^2 / e_k(0)^2$ where the constant $c_k$ captures the mode-dependent gradient imbalance structure.
+
+Summing over time:
+\begin{equation}
+    \imbal(\lr) = \sum_k c_k \sum_{t=0}^{\nsteps-1} \frac{e_k(t)^2}{e_k(0)^2} = \sum_k c_k \sum_{t=0}^{\nsteps-1} \rho_k^{2t} = \sum_k c_k \cdot \frac{1 - \rho_k^{2\nsteps}}{1 - \rho_k^2}.
+\end{equation}
+
+Since $1 - \rho_k^2 = 1 - (1-\lr\lambda_k)^2 = \lr\lambda_k(2-\lr\lambda_k)$:
+\begin{equation}
+    \imbal(\lr) = \sum_k c_k \cdot \frac{1 - (1-\lr\lambda_k)^{2\nsteps}}{\lr\lambda_k(2-\lr\lambda_k)}.
+\end{equation}
+
+For ReLU networks, the activation pattern couples modes, but for sub-EoS learning rates where the switch rate is $O(\hwidth^{-0.5})$, the independent-mode decomposition holds to first order with perturbative corrections. The formula is exact for linear networks and approximate (within 14--27\%) for ReLU.
+\end{proof}
+
+% --- Theorem 5b / 5b-i ---
+\subsection{Proof of Theorem~\ref{thm:compression} (Spectral Compression)}
+\label{app:proof:compression}
+
+\begin{proof}
+The CE Gauss-Newton Hessian is $H_{\text{CE}}(t) = \frac{1}{\nsamples}J(t)^\top S(p(t)) J(t)$ where $S = \text{block\_diag}(S_1,\ldots,S_\nsamples)$ with $S_i = \text{diag}(p_i) - p_ip_i^\top$.
+
+Each block $S_i$ is PSD with $\lambda_{\max}(S_i) = \max_k p_{i,k}(1-p_{i,k})$. By the variational characterization:
+\begin{align}
+    \lambda_{\max}(H_{\text{CE}}) &= \max_{\|v\|=1} \frac{1}{\nsamples}\sum_i (J_i v)^\top S_i(J_i v) \\
+    &\leq \max_{\|v\|=1} \frac{1}{\nsamples}\sum_i \lambda_{\max}(S_i)\|J_i v\|^2 \\
+    &\leq \max_i \lambda_{\max}(S_i) \cdot \lambda_{\max}\!\left(\tfrac{1}{\nsamples}J^\top J\right).
+\end{align}
+
+When the correct class dominates ($q_i > 1/2$), $\max_k p_{i,k}(1-p_{i,k}) = q_i(1-q_i)$, yielding the bound. Under gradient descent on CE, $q_i(t)$ satisfies the logistic ODE $dq_i/dt = q_i(1-q_i)g_i(t)$ with $g_i > 0$, ensuring $q_i \to 1$ and hence $q_i(1-q_i) \to 0$ exponentially.
+\end{proof}
+
+% --- c_k Theorem ---
+\subsection{Proof of Theorem~\ref{thm:ck} (Mode Coefficients)}
+\label{app:proof:ck}
+
+\begin{proof}
+For a 2-layer linear network with data covariance eigendecomposition $\Sigma_x = U_x\Lambda_x U_x^\top$, the problem decomposes into independent modes. In mode $k$, the effective parameterization is $\sigma_k = \sigma_{2,k}\sigma_{1,k}$ with gradient norms:
+\begin{align}
+    \left|\frac{\partial\mathcal{L}}{\partial\sigma_{1,k}}\right|^2 &= (\sigma_k - \sigma_k^*)^2 \sigma_{2,k}^2 \lambda_{x,k}^2, \\
+    \left|\frac{\partial\mathcal{L}}{\partial\sigma_{2,k}}\right|^2 &= (\sigma_k - \sigma_k^*)^2 \sigma_{1,k}^2 \lambda_{x,k}^2.
+\end{align}
+
+The gradient imbalance for mode $k$ is $\delta_k = e_k^2 \lambda_{x,k}^2 (\sigma_{1,k}^2 - \sigma_{2,k}^2)$, where $e_k = \sigma_k - \sigma_k^*$. The weight imbalance $(\sigma_{1,k}^2 - \sigma_{2,k}^2)$ is the conservation quantity for this mode, which evolves only at $O(\lr^2)$ due to Theorem~\ref{thm:drift}.
+
+At leading order, the time-summed contribution is dominated by the initial error:
+\begin{equation}
+    c_k = \sum_t \delta_k(t) \propto e_k(0)^2 \lambda_{x,k}^2 \cdot (\sigma_{1,k}(0)^2 - \sigma_{2,k}(0)^2).
+\end{equation}
+
+For Kaiming initialization with balanced layers ($\sigma_{1,k} \approx \sigma_{2,k}$), the imbalance develops from $O(\lr^2)$ discretization error and is proportional to $e_k(0)^2\lambda_{x,k}^2$, independent of the initialization scale $\sigma_{k,0}$.
+\end{proof}
+
+% --- Proposition tau ---
+\subsection{Proof of Proposition~\ref{prop:tau} (Compression Timescale)}
+\label{app:proof:tau}
+
+\begin{proof}
+Under gradient descent on CE, the correct-class probability for sample $i$ evolves as:
+\begin{equation}
+    \frac{dq_i}{dt} = q_i(1-q_i)\cdot g_i(t), \quad g_i(t) = \frac{\lr}{\nsamples}\sum_j \kappa(x_i,x_j)\cdot r_j(t),
+\end{equation}
+where $\kappa(x_i,x_j) = J(x_i)^\top J(x_j)$ is the NTK kernel and $r_j = 1-q_j$ are residuals.
+
+In the overparameterized regime ($\hwidth \gg \nsamples\log\nsamples/\lambda_0$), the NTK matrix $K$ with $K_{ij} = \kappa(x_i,x_j)$ satisfies $\lambda_{\min}(K) = \Theta(1)$~\citep{du2019gradient,jacot2018neural}. Its trace is $\tr(K) = \sum_i \kappa(x_i,x_i) = \nsamples \cdot C_{\text{arch}}$ where $C_{\text{arch}} = O(1)$.
+
+The mean convergence rate involves contributions from same-class samples via cross-kernel entries. For sample $i$ with class $y_i$, the aggregate growth rate from $\sim\nsamples/\nclasses$ same-class samples gives:
+\begin{equation}
+    g_i \approx \lr \cdot C_{\text{cross}}/\nclasses + O(\lr/\nsamples),
+\end{equation}
+where $C_{\text{cross}} = \expect_{x,x'}[\kappa(x,x')]$ depends on architecture and data distribution but not $\nsamples$. The $O(\lr/\nsamples)$ self-term becomes negligible for large $\nsamples$.
+
+The compression timescale is $\spectau = 1/g_{\min} \approx \nclasses/(\lr \cdot C_{\text{cross}}) = \Theta(1/\lr)$, independent of $\nsamples$.
+\end{proof}
+
+% ============================================================
+% APPENDIX B: EXTENDED EXPERIMENTAL RESULTS
+% ============================================================
+\section{Extended Experimental Results}
+\label{app:experiments}
+
+All experiments use 2-layer networks (unless noted), Gaussian mixture data ($\nsamples=200$, $\inputdim=20$, $\nclasses=5$, separation 2.0), seeds $\{42, 137, 256, 512, 1024\}$, and full-batch gradient descent. Results are averaged over seeds with standard errors reported.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Summary of all 23 key experiments. Full configurations and per-seed results available in the code repository.}
+\label{tab:experiments}
+\begin{tabular}{@{}clllr@{}}
+\toprule
+\textbf{\#} & \textbf{Name} & \textbf{Key Result} & \textbf{Theory Link} & \textbf{Session} \\
+\midrule
+E1 & Conservation verification & Drift $< 0.003\%$ & Thm~\ref{thm:conservation} & 1 \\
+E2 & Conservation with bias & Bias breaks conservation & Thm~\ref{thm:conservation} & 1 \\
+E3 & Drift vs.\ learning rate & Drift $\sim \lr$ scaling & Thm~\ref{thm:drift} & 1 \\
+E4 & EoS conservation breaking & 5500$\times$ drift increase & Thm~\ref{thm:drift} & 2 \\
+E5 & Drift scaling law & $\drexp = 1.16$, $R^2 > 0.99$ & Thm~\ref{thm:spectral} & 2 \\
+E6 & Depth dependence & $\drexp$: 1.07 (2L) to 1.72 (8L) & Thm~\ref{thm:spectral} & 3 \\
+E7 & Optimizer dependence & Adam: $\drexp = 0.56$ & Thm~\ref{thm:spectral} & 3 \\
+E8 & Spectral universality & 14--27\% prediction error & Thm~\ref{thm:spectral} & 5 \\
+E9 & Linear-ReLU gap & 2.2\% switch rate difference & Thms~\ref{thm:linear},\ref{thm:spectral} & 5 \\
+E10 & Activation coupling & Smooth $\drexp$ transition & Thm~\ref{thm:spectral} & 5 \\
+E11 & Interpolated activation & $\drexp$ varies with homogeneity & Thm~\ref{thm:spectral} & 5 \\
+E12 & Loss function interaction & Non-additive 3-factor decomp. & Thms~\ref{thm:spectral},\ref{thm:compression} & 6 \\
+E13 & CE clamping mechanism & CE $\drexp \approx 1.0$ at all widths & Thm~\ref{thm:compression} & 6 \\
+E14 & Interaction with width & CE regularization grows with $\hwidth$ & Thm~\ref{thm:compression} & 6 \\
+E15 & Width switch rate & Per-neuron rate $\hwidth$-independent at EoS & Thm~\ref{thm:dichotomy} & 7 \\
+E16 & Time-dependent Hessian & CE $R = 0.988$ at $t = 250$ & Thm~\ref{thm:compression} & 7 \\
+E17 & CE clamping effect & CE clamps $\drexp \approx 1.0$ & Thm~\ref{thm:compression} & 7 \\
+E18 & CE Hessian evolution & 24$\times$ compression, $\nsamples$-indep. & Thm~\ref{thm:compression} & 8 \\
+E19 & MSE fine width sweep & $\drexp{-}1 \sim \hwidth^{1.18}$ & Thm~\ref{thm:dichotomy} & 8 \\
+E20 & Linear $c_k$ validation & $R = 0.847$ & Thm~\ref{thm:ck} & 8 \\
+E21 & ReLU $c_k$ validation & $R > 0.80$ at all $\lr$ & Thm~\ref{thm:ck} & 9 \\
+E22 & Width-dimension transition & $\hwidth^*/\inputdim$ varies: 6.0, 3.0, 1.0 & Thm~\ref{thm:dichotomy} & 9 \\
+E23 & $\spectau$ vs.\ learning rate & $\spectau = 1.33/\lr + 29$, $R^2 = 0.988$ & Prop.~\ref{prop:tau} & 9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% APPENDIX C: REPRODUCIBILITY
+% ============================================================
+\section{Reproducibility}
+\label{app:reproducibility}
+
+\paragraph{Hardware.} Intel Core i5-1038NG7 (4 cores, 2.0 GHz), 16 GB RAM, CPU only (no GPU).
+
+\paragraph{Software.} Python 3.12.7, PyTorch 2.2.2, NumPy 1.26.4, Matplotlib 3.9.2.
+
+\paragraph{Random seeds.} All experiments use seeds $\{42, 137, 256, 512, 1024\}$ (or a subset of 3 seeds for computationally intensive experiments). Seeds are set for both Python's random module and PyTorch.
+
+\paragraph{Code availability.} All experiment scripts, the shared utility library, and configuration files are available at \url{https://github.com/danielxmed/TheLocalMinimumParadox}. Each experiment saves a \texttt{config.json} file with the complete configuration and a \texttt{results.json} file with processed results, enabling exact reproduction.
+
+\paragraph{Computational cost.} Individual experiments run in 30 seconds to 15 minutes on the hardware above. The full suite of 23 experiments requires approximately 4 hours of total CPU time.

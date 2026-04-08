@@ -1,0 +1,73 @@
+{
+  "experiment_name": "relu_ck_validation",
+  "experiment_number": "E21",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 9,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "hidden": 64,
+  "input_dim": 20,
+  "output_dim": 5,
+  "n_train": 200,
+  "n_steps": 500,
+  "learning_rates": [
+    0.0005,
+    0.001,
+    0.003,
+    0.01
+  ],
+  "analysis": {
+    "lr_R_pairs": [
+      [
+        0.0005,
+        0.8036346877201238
+      ],
+      [
+        0.001,
+        0.8956679913841654
+      ],
+      [
+        0.003,
+        0.8938176858849042
+      ],
+      [
+        0.01,
+        0.8566073042237502
+      ]
+    ],
+    "lr_switch_pairs": [
+      [
+        0.0005,
+        0.0
+      ],
+      [
+        0.001,
+        0.0
+      ],
+      [
+        0.003,
+        0.00033854166395030916
+      ],
+      [
+        0.01,
+        0.0005729166538609812
+      ]
+    ],
+    "R_vs_switch_correlation": 0.20119052799929513
+  },
+  "total_time_seconds": 32.5370831489563
+}

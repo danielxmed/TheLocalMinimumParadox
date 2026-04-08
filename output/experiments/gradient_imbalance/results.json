@@ -1,0 +1,67 @@
+{
+  "0.0001": {
+    "lr": 0.0001,
+    "mean_actual_drift": 4.4065120644631864e-05,
+    "mean_S_eta": 3946.8313619205846,
+    "std_S_eta": 407.15150045143787,
+    "drift_over_eta_sq": 4406.512064463186,
+    "mean_decomposition_error": 0.1545488832695341,
+    "mean_loss_integral": 2272.524897950888,
+    "mean_grad_integral": 8643.51308816563,
+    "S_over_grad_integral": 0.456623518893543,
+    "mean_sign_change_rate": 0.0,
+    "mean_hurst_exponent": 0.889626900946034
+  },
+  "0.001": {
+    "lr": 0.001,
+    "mean_actual_drift": 0.0006290821139600666,
+    "mean_S_eta": 629.6368842361101,
+    "std_S_eta": 80.370437356032,
+    "drift_over_eta_sq": 629.0821139600666,
+    "mean_decomposition_error": 0.004337522168697541,
+    "mean_loss_integral": 556.2632936846464,
+    "mean_grad_integral": 1581.1259153921296,
+    "S_over_grad_integral": 0.39822058326073034,
+    "mean_sign_change_rate": 0.0,
+    "mean_hurst_exponent": 0.8529399249279533
+  },
+  "0.01": {
+    "lr": 0.01,
+    "mean_actual_drift": 0.006440398013495496,
+    "mean_S_eta": 64.38191782640652,
+    "std_S_eta": 8.154367437017699,
+    "drift_over_eta_sq": 64.40398013495496,
+    "mean_decomposition_error": 0.0004630964033076511,
+    "mean_loss_integral": 72.41499110932928,
+    "mean_grad_integral": 161.3968193630967,
+    "S_over_grad_integral": 0.39890450183882253,
+    "mean_sign_change_rate": 0.0,
+    "mean_hurst_exponent": 0.7342657594064865
+  },
+  "0.1": {
+    "lr": 0.1,
+    "mean_actual_drift": 0.07289743952034655,
+    "mean_S_eta": 7.289499475760974,
+    "std_S_eta": 0.8933870873347479,
+    "drift_over_eta_sq": 7.289743952034653,
+    "mean_decomposition_error": 6.408078790416382e-05,
+    "mean_loss_integral": 8.085176955851784,
+    "mean_grad_integral": 14.94344837014917,
+    "S_over_grad_integral": 0.48780571225597297,
+    "mean_sign_change_rate": 0.0,
+    "mean_hurst_exponent": 0.5849643411631685
+  },
+  "1.0": {
+    "lr": 1.0,
+    "mean_actual_drift": 3.6559567195944167,
+    "mean_S_eta": 3.655950428022313,
+    "std_S_eta": 1.2657217038984385,
+    "drift_over_eta_sq": 3.6559567195944167,
+    "mean_decomposition_error": 1.8803995478884844e-06,
+    "mean_loss_integral": 1.4158190787684362,
+    "mean_grad_integral": 7.582750055931058,
+    "S_over_grad_integral": 0.48214043731570844,
+    "mean_sign_change_rate": 0.0007003501750875438,
+    "mean_hurst_exponent": 0.5017049049009273
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "experiment_name": "grokking_conservation_v2",
+  "version": 2,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "p": 23,
+  "frac_train": 0.5,
+  "n_steps": 40000,
+  "hidden": 256,
+  "configs": [
+    {
+      "lr": 1.0,
+      "weight_decay": 0.1,
+      "use_bias": false,
+      "optimizer_type": "sgd"
+    },
+    {
+      "lr": 0.5,
+      "weight_decay": 0.1,
+      "use_bias": false,
+      "optimizer_type": "sgd"
+    },
+    {
+      "lr": 1.0,
+      "weight_decay": 0.1,
+      "use_bias": true,
+      "optimizer_type": "sgd"
+    },
+    {
+      "lr": 0.001,
+      "weight_decay": 1.0,
+      "use_bias": true,
+      "optimizer_type": "adam"
+    }
+  ],
+  "total_runtime_s": 693.7689192295074
+}

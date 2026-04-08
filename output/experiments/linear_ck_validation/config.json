@@ -1,0 +1,33 @@
+{
+  "experiment_name": "linear_ck_validation",
+  "experiment_number": "E20",
+  "version": 1,
+  "date": "2026-04-07",
+  "session": 8,
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256
+  ],
+  "hidden": 64,
+  "input_dim": 20,
+  "output_dim": 5,
+  "n_train": 200,
+  "mean_ck_correlation": 0.8473719554094563,
+  "per_seed_correlations": [
+    0.8147175620910116,
+    0.8677947485891998,
+    0.8596035555481577
+  ],
+  "total_time_seconds": 8.193006038665771
+}

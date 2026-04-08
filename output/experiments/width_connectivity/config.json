@@ -1,0 +1,47 @@
+{
+  "experiment_name": "width_connectivity",
+  "theory": "percolation_phase_transition",
+  "version": 1,
+  "date": "2026-04-07",
+  "hardware": {
+    "platform": "macOS-15.7.4-x86_64-i386-64bit",
+    "processor": "i386",
+    "cores": "8",
+    "ram": "16.0 GB",
+    "device": "cpu",
+    "pytorch_version": "2.2.2",
+    "python_version": "3.12.7 (main, Nov  5 2025, 04:21:27) [Clang 17.0.0 (clang-1700.0.13.5)]",
+    "cuda_available": "False"
+  },
+  "seeds": [
+    42,
+    137,
+    256,
+    512,
+    1024
+  ],
+  "n_steps": 2000,
+  "lr": 0.01,
+  "data_config": {
+    "name": "gaussian_mixture",
+    "n_train": 200,
+    "n_test": 50,
+    "d": 20,
+    "K": 5,
+    "separation": 2.0
+  },
+  "widths": [
+    4,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64,
+    96,
+    128,
+    256,
+    512
+  ]
+}
